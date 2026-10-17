@@ -3,7 +3,10 @@ const DEFAULT_ORIGINS = [
   'https://sabana-gold.firebaseapp.com',
   'https://sabanagold.in',
   'https://www.sabanagold.in',
-  'https://sabana-media-vault.vercel.app'
+  'https://sabana-media-vault.vercel.app',
+  'https://sabanagold.com',
+  'https://www.sabanagold.com',
+  'https://sabanagold.vercel.app'
 ];
 
 function getAllowedOrigins() {
