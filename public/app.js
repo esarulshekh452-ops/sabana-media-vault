@@ -186,7 +186,7 @@
         option.dataset.branch = repo.default_branch || 'main';
         option.dataset.sizeKb = String(repo.size_kb || 0);
         option.dataset.description = repo.description || '';
-        (repo.private ? privateGroup : publicGroup).add(option);
+        (repo.private ? privateGroup : publicGroup).append(option);
       });
       if (publicGroup.children.length) repoSelect.add(publicGroup);
       if (privateGroup.children.length) repoSelect.add(privateGroup);
