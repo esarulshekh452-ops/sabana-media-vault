@@ -3,6 +3,7 @@ import { readFile, unlink } from 'node:fs/promises';
 import { requireSession } from '../server/auth.js';
 import { GitHubError, sanitizeFolder, sanitizePathSegment, uploadToRepository } from '../server/github.js';
 import { uploadToFirebase } from '../server/firebase.js';
+import { applyCors } from '../server/cors.js';
 
 export const config = { api: { bodyParser: false, responseLimit: false } };
 const MAX_FILE_BYTES = 4 * 1024 * 1024;
@@ -15,6 +16,7 @@ function publicError(error) {
 }
 
 export default async function handler(req, res) {
+  if (applyCors(req, res)) return;
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
     return res.status(405).json({ error: 'Method not allowed.' });
@@ -55,6 +57,7 @@ export default async function handler(req, res) {
     const branch = String(first(fields.branch) || '').trim();
     const requestedProvider = String(first(fields.provider) || 'github');
     const requirePublicLink = String(first(fields.requirePublicLink) ?? 'true') !== 'false';
+    const allowFirebaseFallback = String(first(fields.allowFirebaseFallback) ?? 'true') !== 'false';
 
     let githubResult = null;
     let githubFailure = null;
@@ -91,6 +94,9 @@ export default async function handler(req, res) {
 
     if (githubResult?.repo.private) {
       if (requirePublicLink) {
+        if (!allowFirebaseFallback) {
+          return res.status(409).json({ error: 'Private GitHub repositories do not provide public storefront image URLs. Select a public repository or enable Firebase fallback.' });
+        }
         try {
           const fb = await uploadToFirebase({ filePath: path, file, buffer, contentType });
           return res.status(200).json({
@@ -138,6 +144,11 @@ export default async function handler(req, res) {
         size_bytes: buffer.length,
         message: 'Uploaded to private GitHub repository. This image URL requires authorized access and should not be used on a public storefront.'
       });
+    }
+
+    if (!allowFirebaseFallback) {
+      const status = githubFailure?.status === 400 ? 400 : (githubFailure?.status === 503 ? 503 : 502);
+      return res.status(status).json({ error: `GitHub upload failed. Firebase fallback is disabled. ${publicError(githubFailure)}` });
     }
 
     try {

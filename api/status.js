@@ -1,6 +1,8 @@
 import { isAuthenticated, requireGet } from '../server/auth.js';
+import { applyCors } from '../server/cors.js';
 
 export default function handler(req, res) {
+  if (applyCors(req, res)) return;
   if (!requireGet(req, res)) return;
   if (!isAuthenticated(req)) return res.status(401).json({ error: 'Session expired. Please sign in again.' });
   res.setHeader('Cache-Control', 'no-store');
