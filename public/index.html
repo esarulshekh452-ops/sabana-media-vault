@@ -1,1 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#171816">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Sabana Media Vault</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="Sabana Media Vault home">
+      <span class="brand-mark">S</span>
+      <span class="brand-text"><strong>SABANA</strong><small>MEDIA VAULT</small></span>
+    </a>
+    <div class="topbar-right">
+      <span class="private-label"><span class="status-dot"></span> PRIVATE WORKSPACE</span>
+      <button id="logoutBtn" class="button button-quiet hidden" type="button">Sign out <span aria-hidden="true">↗</span></button>
+    </div>
+  </header>
 
+  <main>
+    <section id="loginScreen" class="login-layout">
+      <div class="login-copy">
+        <div class="eyebrow"><span class="eyebrow-line"></span> STORE ASSET MANAGEMENT</div>
+        <h1>Your product photos.<br><em>One organised place.</em></h1>
+        <p>Upload product images to your GitHub repositories, copy website-ready image URLs, and keep a Firebase fallback for when GitHub is unavailable.</p>
+        <div class="login-points">
+          <span><b>01</b> Repository picker</span>
+          <span><b>02</b> Live upload progress</span>
+          <span><b>03</b> Shareable image links</span>
+        </div>
+      </div>
+      <form id="loginForm" class="login-card">
+        <div class="card-emblem">✳</div>
+        <div class="eyebrow">ADMIN ACCESS</div>
+        <h2>Welcome back.</h2>
+        <p class="muted">Sign in to manage Sabana Gold image assets.</p>
+        <label class="field-label" for="adminPassword">Admin password</label>
+        <div class="password-wrap"><input id="adminPassword" type="password" autocomplete="current-password" required placeholder="Enter your workspace password"><button id="togglePassword" class="password-toggle" type="button" aria-label="Show password">Show</button></div>
+        <button class="button button-primary login-submit" type="submit"><span>Unlock workspace</span><span aria-hidden="true">→</span></button>
+        <p id="loginError" class="form-error" role="alert"></p>
+        <p class="login-foot"><span class="lock-icon">♧</span> GitHub tokens stay on the server, never in the browser.</p>
+      </form>
+    </section>
+
+    <section id="dashboard" class="hidden">
+      <div class="page-heading">
+        <div>
+          <div class="eyebrow"><span class="eyebrow-line"></span> SABANA GOLD / IMAGE LIBRARY</div>
+          <h1>Media <em>workspace.</em></h1>
+          <p class="muted heading-subtitle">Manage product images and get their direct URLs in seconds.</p>
+        </div>
+        <div class="connected-user"><span class="online-pulse"></span><span id="githubUserLabel">Connecting to GitHub…</span></div>
+      </div>
+
+      <div id="globalNotice" class="notice hidden" role="status"></div>
+
+      <div class="stats-grid">
+        <article class="stat-card"><div class="stat-top"><span>REPOSITORIES</span><span class="stat-icon">▤</span></div><div id="repoCountStat" class="stat-value">—</div><div class="stat-meta">Owned by your GitHub account</div></article>
+        <article class="stat-card"><div class="stat-top"><span>APPROX. TOTAL SIZE</span><span class="stat-icon">◫</span></div><div id="totalSizeStat" class="stat-value">—</div><div class="stat-meta">Sum of GitHub repository size fields</div></article>
+        <article class="stat-card stat-card-highlight"><div class="stat-top"><span>SELECTED REPO SIZE</span><span class="stat-icon">↗</span></div><div id="selectedSizeStat" class="stat-value">Select a repo</div><div id="selectedRepoMeta" class="stat-meta">Approximate size in GitHub API</div></article>
+      </div>
+
+      <div class="workspace-grid">
+        <section class="panel upload-panel">
+          <div class="panel-heading">
+            <div><div class="section-index">01 / UPLOAD</div><h2>Drop in your photos</h2><p class="muted">Upload one or many photos. They'll be processed one at a time.</p></div>
+            <span class="panel-symbol">↑</span>
+          </div>
+          <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Choose image files or drop them here">
+            <input id="fileInput" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" multiple hidden>
+            <div class="drop-icon"><span>＋</span></div>
+            <div class="drop-title">Drop photos here <span>or <u>browse files</u></span></div>
+            <p>JPG, PNG, WebP, GIF, AVIF · up to 4 MB per photo</p>
+            <div class="drop-foot"><span class="mini-check">✓</span> Original image quality preserved</div>
+          </div>
+          <div id="fileQueueWrap" class="file-queue-wrap hidden">
+            <div class="queue-header"><span>SELECTED PHOTOS <b id="queueCount">0</b></span><button id="clearQueueBtn" type="button" class="text-button">Clear all</button></div>
+            <div id="fileQueue" class="file-queue"></div>
+          </div>
+          <div class="upload-actions"><div class="selection-hint"><span class="tiny-dot"></span><span id="queueSummary">No photos selected</span></div><button id="uploadBtn" class="button button-primary" type="button" disabled><span>Upload photos</span><span aria-hidden="true">↑</span></button></div>
+          <div id="uploadResults" class="upload-results hidden"><div class="results-heading"><div><div class="section-index">UPLOAD ACTIVITY</div><h3>Finished uploads</h3></div><button id="clearResultsBtn" class="text-button" type="button">Clear history</button></div><div id="resultsList"></div></div>
+        </section>
+
+        <aside class="right-column">
+          <section class="panel repo-panel">
+            <div class="panel-heading compact"><div><div class="section-index">02 / DESTINATION</div><h2>Choose a repository</h2></div><span class="panel-symbol">⌘</span></div>
+            <label class="field-label" for="repoSelect">GitHub repository</label>
+            <div class="select-wrap"><select id="repoSelect"><option value="">Loading repositories…</option></select><span class="select-arrow">⌄</span></div>
+            <div id="repoInfo" class="repo-info hidden"><div class="repo-info-top"><span id="repoVisibility" class="visibility-chip">PUBLIC</span><span id="repoSizeInline" class="repo-size-inline"></span></div><strong id="repoFullName"></strong><p id="repoDescription"></p><a id="repoLink" href="#" target="_blank" rel="noreferrer">Open repository ↗</a></div>
+            <div class="field-row"><div class="field-block"><label class="field-label" for="branchInput">Branch</label><input id="branchInput" type="text" value="main" placeholder="main" autocomplete="off"></div><div class="field-block"><label class="field-label" for="folderInput">Folder path</label><input id="folderInput" type="text" value="products" placeholder="products/rings" autocomplete="off"></div></div>
+            <label class="checkbox-row"><input id="publicLinkCheck" type="checkbox" checked><span class="checkbox-look"></span><span><strong>Need a public website link</strong><small>Private repos will use a Firebase public copy if Firebase is configured.</small></span></label>
+            <div id="privateWarning" class="inline-warning hidden">This repository is private. Its raw GitHub links won't work for public store visitors.</div>
+            <button id="createRepoBtn" class="button button-outline" type="button"><span class="plus-circle">＋</span> Create new repository</button>
+            <button id="refreshReposBtn" class="refresh-button" type="button">↻ Refresh repository list</button>
+          </section>
+
+          <section class="panel fallback-panel">
+            <div class="fallback-top"><div class="fallback-icon">◈</div><div><h3>Automatic Firebase fallback</h3><p class="muted">If GitHub upload fails, we try Firebase Storage automatically.</p></div></div>
+            <div class="fallback-status"><span id="githubStatusDot" class="status-dot status-unknown"></span><span id="githubStatusText">Checking GitHub configuration…</span></div>
+            <div class="fallback-status"><span id="firebaseStatusDot" class="status-dot status-unknown"></span><span id="firebaseStatusText">Checking Firebase configuration…</span></div>
+            <p class="small-note">Firebase fallback requires a Storage bucket and server-side service account configured in Vercel. The credentials are not exposed in this dashboard.</p>
+          </section>
+        </aside>
+      </div>
+      <footer class="dashboard-footer"><span>© SABANA GOLD · MEDIA VAULT</span><span>Repository size figures are estimates, not a GitHub account storage quota.</span></footer>
+    </section>
+  </main>
+
+  <div id="createRepoModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="createRepoTitle">
+    <form id="createRepoForm" class="modal-card">
+      <button id="closeModalBtn" class="modal-close" type="button" aria-label="Close">×</button>
+      <div class="section-index">NEW STORAGE LOCATION</div><h2 id="createRepoTitle">Create repository</h2><p class="muted">Make a separate repo for product photography. Public is recommended for website-ready raw links.</p>
+      <label class="field-label" for="newRepoName">Repository name</label><input id="newRepoName" type="text" maxlength="100" required placeholder="sabana-gold-product-images" pattern="[A-Za-z0-9._-]+">
+      <label class="field-label" for="newRepoDescription">Description <span class="optional">OPTIONAL</span></label><input id="newRepoDescription" type="text" maxlength="350" placeholder="Product photos for Sabana Gold">
+      <label class="field-label" for="newRepoVisibility">Visibility</label><div class="select-wrap"><select id="newRepoVisibility"><option value="public">Public — image URLs work on the store</option><option value="private">Private — public copy may require Firebase</option></select><span class="select-arrow">⌄</span></div>
+      <div id="createRepoError" class="form-error" role="alert"></div><div class="modal-actions"><button id="cancelModalBtn" class="button button-quiet" type="button">Cancel</button><button id="createRepoSubmit" class="button button-primary" type="submit">Create repository <span aria-hidden="true">→</span></button></div>
+    </form>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="/app.js" defer></script>
+</body>
+</html>
