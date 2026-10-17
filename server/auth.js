@@ -58,7 +58,9 @@ function readCookie(req, name) {
 
 export function isAuthenticated(req) {
   try {
-    const token = readCookie(req, COOKIE_NAME);
+    const authorization = String(req.headers?.authorization || req.headers?.Authorization || '');
+    const bearer = authorization.match(/^Bearer\s+(.+)$/i)?.[1]?.trim() || '';
+    const token = bearer || readCookie(req, COOKIE_NAME);
     const [payload, providedSignature, extra] = token.split('.');
     if (!payload || !providedSignature || extra) return false;
     const expectedSignature = signature(payload);
