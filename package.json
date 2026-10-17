@@ -1,0 +1,19 @@
+{
+  "name": "sabana-media-vault",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Private upload dashboard for GitHub-hosted product images with Firebase Storage fallback.",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "dev": "vercel dev",
+    "start": "vercel dev"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.4.0",
+    "formidable": "^3.5.4"
+  },
+  "devDependencies": {
+    "vercel": "^41.7.8"
+  }
+}
