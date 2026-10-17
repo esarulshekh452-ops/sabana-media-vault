@@ -52,7 +52,7 @@ Set the environment variables in Vercel's local environment workflow (for exampl
 ## Troubleshooting
 
 - **Incorrect admin password / session error:** check `ADMIN_PASSWORD` and `SESSION_SECRET`, then redeploy.
-- **GitHub repositories don't load:** confirm `GITHUB_TOKEN` is valid, not expired, and has repository metadata access. If you have more than 2,000 owned repositories, the size figure is marked as partial.
+- **GitHub repositories don't load:** confirm `GITHUB_TOKEN` is valid, not expired, and has repository metadata access. If the page reports `.add is not a function`, deploy the latest app code; the repository dropdown must append options to `<optgroup>` elements. If `/api/status` returns 401, sign in again. If that keeps happening, confirm `SESSION_SECRET` is stable across all deployments/functions and redeploy once after setting it; changing it invalidates existing sessions. If you have more than 2,000 owned repositories, the size figure is marked as partial.
 - **Create repository fails:** token permission or organization policy may block repository creation. Check the API error shown in the dashboard.
 - **GitHub upload fails:** check token Contents write permission, selected branch, file size, and whether the destination path already exists. Each uploaded filename is timestamped to reduce path collisions.
 - **Firebase fallback fails:** confirm both Firebase variables, valid service-account JSON/private key, exact bucket name, billing eligibility, and bucket access.
