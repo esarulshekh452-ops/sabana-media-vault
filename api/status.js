@@ -9,7 +9,7 @@ export default function handler(req, res) {
   return res.status(200).json({
     ok: true,
     github_configured: Boolean(process.env.GITHUB_TOKEN),
-    firebase_configured: Boolean(process.env.FIREBASE_SERVICE_ACCOUNT_JSON && process.env.FIREBASE_STORAGE_BUCKET),
+    upload_provider: 'github-only',
     max_photo_bytes: 4 * 1024 * 1024
   });
 }
